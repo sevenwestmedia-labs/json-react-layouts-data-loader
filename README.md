@@ -5,7 +5,7 @@ Component middleware for JSON React layouts which enables data loading via the [
 ## Usage
 
 ```ts
-import { init } from 'json-react-layouts-data-loader
+import { init } from 'json-react-layouts-data-loader'
 import { DataLoaderResources, DataProvider } from 'react-ssr-data-loader'
 
 interface MyServices {
@@ -23,18 +23,14 @@ export const testComponentWithDataRegistration = createRegisterableComponentWith
     'test-with-data',
     {
         // You provide this function to load the data
-        loadData: props => ...,
+        loadData: props => {},
     },
     (props, data) => {
         if (!data.loaded) {
             return <div>Loading...</div>
         }
 
-        return (
-            <TestComponentWithData
-                data={data.result}
-            />
-        )
-    }
+        return <TestComponentWithData data={data.result} />
+    },
 )
 ```
