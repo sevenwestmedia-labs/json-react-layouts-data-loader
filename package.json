@@ -43,13 +43,14 @@
         "react-ssr-data-loader": "^1.1.0",
         "ts-jest": "^24.0.2",
         "tslib": "^1.10.0",
-        "typescript": "3.5.3"
+        "typescript": "3.5.3",
+        "json-react-layouts": "^1.0.5"
     },
     "dependencies": {
-        "json-react-layouts": "^1.0.3",
         "typescript-log": "^1.1.1"
     },
     "peerDependencies": {
+        "json-react-layouts": "^1.0.5",
         "react-ssr-data-loader": "^1.1.0"
     }
 }
