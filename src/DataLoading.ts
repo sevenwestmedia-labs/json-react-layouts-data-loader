@@ -1,4 +1,4 @@
-import { ComponentRegistrar } from 'react-json-page-layout'
+import { LayoutApi } from 'json-react-layouts'
 
 export interface DataDefinition<TConfig extends {}, TData, LoadDataServices> {
     getCacheKey?: (config: TConfig, services: LoadDataServices) => string
@@ -10,9 +10,9 @@ export interface ComponentState<TData> {
     data: MaybeLoaded<TData>
 }
 
-export interface LoadArguments<LoadDataServices> {
+export interface LoadArguments<Services> {
     componentRenderPath: string
-    dataDefinition: DataDefinition<any, any, LoadDataServices>
+    dataDefinition: DataDefinition<any, any, Services>
     dataDefinitionArgs: any
-    componentRegistrar: ComponentRegistrar<LoadDataServices, any>
+    layout: LayoutApi<any, any, Services, any>
 }

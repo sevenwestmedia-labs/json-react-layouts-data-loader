@@ -9,7 +9,8 @@
         "build:esm": "tsc -p ./tsconfig.build.json --outDir ./dist/esm --module es2015",
         "build": "yarn build:commonjs && yarn build:esm",
         "lint": "eslint --ext .js,.ts .",
-        "test": "jest"
+        "test": "jest",
+        "verify": "yarn build && yarn test && yarn lint"
     },
     "jest": {
         "transform": {
@@ -25,7 +26,7 @@
     "devDependencies": {
         "@types/enzyme-adapter-react-16": "^1.0.5",
         "@types/jest": "^24.0.18",
-        "@types/node": "^10.14.16",
+        "@types/node": "^12.7.3",
         "@types/react": "^16.9.2",
         "@typescript-eslint/eslint-plugin": "^2.0.0",
         "@typescript-eslint/parser": "^2.0.0",
@@ -42,10 +43,11 @@
         "react-ssr-data-loader": "^1.1.0",
         "ts-jest": "^24.0.2",
         "tslib": "^1.10.0",
-        "typescript": "^3.5.3"
+        "typescript": "3.5.3"
     },
     "dependencies": {
-        "typescript-log": "^1.1.0"
+        "json-react-layouts": "^1.0.3",
+        "typescript-log": "^1.1.1"
     },
     "peerDependencies": {
         "react-ssr-data-loader": "^1.1.0"

@@ -4,7 +4,7 @@ import {
     RenderFunctionServices,
     ComponentRegistration,
     RenderFunction,
-} from 'react-json-page-layout'
+} from 'json-react-layouts'
 import { ComponentState, LoadArguments, DataDefinition, MaybeLoaded } from './DataLoading'
 import { DataLoaderResources } from 'react-ssr-data-loader'
 
@@ -37,6 +37,7 @@ export function init<LoadDataServices>(
     ) => ComponentRegistration<TType, TProps & { dataDefinitionArgs: TConfig }, LoadDataServices>
     middleware: ComponentRendererMiddleware<LoadDataServices, {}>
 } {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const ComponentDataLoader = resources.registerResource<any, LoadArguments<LoadDataServices>>(
         'component-data-loader',
         params => {
@@ -77,17 +78,15 @@ export function init<LoadDataServices>(
             return registrationWithData
         },
         middleware: (componentProps, middlewareProps, services, next) => {
-            const componentDataDefinition = services.routeBuilder.compositionRegistrar.componentRegistrar.get(
-                componentProps.type,
-            )
+            const componentRegistrar = (services.layout as any).compositionRegistrar
+                .componentRegistrar
+            const componentDataDefinition = componentRegistrar.get(componentProps.componentType)
 
             const dataDefinition = (componentDataDefinition as any).dataDefinition
             if (dataDefinition) {
                 return (
                     <ComponentDataLoader
-                        componentRegistrar={
-                            services.routeBuilder.compositionRegistrar.componentRegistrar
-                        }
+                        layout={services.layout}
                         componentRenderPath={componentProps.componentRenderPath}
                         dataDefinition={dataDefinition}
                         dataDefinitionArgs={componentProps.dataDefinitionArgs}
