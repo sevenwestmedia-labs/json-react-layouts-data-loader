@@ -120,3 +120,5 @@ export function init<LoadDataServices>(
         },
     }
 }
+
+export { DataDefinition }
