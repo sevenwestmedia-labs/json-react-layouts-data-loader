@@ -121,4 +121,4 @@ export function init<LoadDataServices>(
     }
 }
 
-export { DataDefinition }
+export { DataDefinition, MaybeLoaded }
