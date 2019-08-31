@@ -1,5 +1,8 @@
 # JSON React layouts data loader
 
+[![Build Status](https://travis-ci.com/sevenwestmedia-labs/json-react-layouts-data-loader.svg?branch=master)](https://travis-ci.com/sevenwestmedia-labs/json-react-layouts-data-loader)
+[![npm](https://img.shields.io/npm/v/json-react-layouts-data-loader)](https://www.npmjs.com/package/json-react-layouts-data-loader)
+
 Component middleware for JSON React layouts which enables data loading via the [React SSR Data Loader](https://www.npmjs.com/package/react-ssr-data-loader) library.
 
 ## Usage
