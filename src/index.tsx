@@ -1,44 +1,49 @@
 import React from 'react'
 import {
     ComponentRendererMiddleware,
-    RenderFunctionServices,
     ComponentRegistration,
     RenderFunction,
 } from 'json-react-layouts'
-import { ComponentState, LoadArguments, DataDefinition, MaybeLoaded } from './DataLoading'
 import { DataLoaderResources } from 'react-ssr-data-loader'
 
+import { ComponentState, LoadArguments, DataDefinition, MaybeLoaded } from './DataLoading'
+import { getComponentDataArgs } from './get-data-args'
+
 type RenderComponentWithDataProps<
-    TProps extends {},
+    ComponentProps extends {},
     TData,
     TConfig extends {},
-    LoadDataServices
+    Services
 > = (
-    props: TProps,
+    props: ComponentProps,
     dataProps: MaybeLoaded<TData> & {
         dataDefinitionArgs: TConfig
     },
-    services: RenderFunctionServices<LoadDataServices>,
+    services: Services,
 ) => React.ReactElement<any> | false | null
 
 // TODO this could have a better name
-export function init<LoadDataServices>(
-    resources: DataLoaderResources<LoadDataServices>,
+export function init<Services>(
+    resources: DataLoaderResources<Services>,
 ): {
     createRegisterableComponentWithData: <
-        TType extends string,
-        TProps extends {},
-        TConfig extends {},
-        TData
+        ComponentType extends string,
+        ComponentProps extends {},
+        DataLoadArgs extends {},
+        ComponentData
     >(
-        type: TType,
-        dataDefinition: DataDefinition<TConfig, TData, LoadDataServices>,
-        render: RenderComponentWithDataProps<TProps, TData, TConfig, LoadDataServices>,
-    ) => ComponentRegistration<TType, TProps & { dataDefinitionArgs: TConfig }, LoadDataServices>
-    middleware: ComponentRendererMiddleware<LoadDataServices, {}>
+        type: ComponentType,
+        dataDefinition: DataDefinition<DataLoadArgs, ComponentData, Services>,
+        render: RenderComponentWithDataProps<ComponentProps, ComponentData, DataLoadArgs, Services>,
+    ) => ComponentRegistration<
+        ComponentType,
+        ComponentProps & { dataDefinitionArgs: DataLoadArgs },
+        Services
+    >
+    middleware: ComponentRendererMiddleware<Services, {}>
 } {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const ComponentDataLoader = resources.registerResource<any, LoadArguments<LoadDataServices>>(
+    const ComponentDataLoader = resources.registerResource<any, LoadArguments<Services>>(
         'component-data-loader',
         params => {
             return params.dataDefinition.loadData(params.dataDefinitionArgs, params)
@@ -48,14 +53,19 @@ export function init<LoadDataServices>(
 
     return {
         createRegisterableComponentWithData: function createRegisterableComponentWithData<
-            TType extends string,
-            TProps extends {},
-            TConfig extends {},
-            TData
+            ComponentType extends string,
+            ComponentProps extends {},
+            DataLoadArgs extends {},
+            ComponentData
         >(
-            type: TType,
-            dataDefinition: DataDefinition<TConfig, TData, LoadDataServices>,
-            render: RenderComponentWithDataProps<TProps, TData, TConfig, LoadDataServices>,
+            type: ComponentType,
+            dataDefinition: DataDefinition<DataLoadArgs, ComponentData, Services>,
+            render: RenderComponentWithDataProps<
+                ComponentProps,
+                ComponentData,
+                DataLoadArgs,
+                Services
+            >,
         ) {
             // This is quite a complex transform which can't be modelled in typescript.
             //
@@ -63,8 +73,9 @@ export function init<LoadDataServices>(
             // The content area renderer has a data loader which will look for this property
             // Then use the loadData function
             const normalRender: RenderFunction<
-                TProps & ComponentState<TData> & { dataDefinitionArgs: TConfig },
-                LoadDataServices
+                ComponentProps &
+                    ComponentState<ComponentData> & { dataDefinitionArgs: DataLoadArgs },
+                Services
             > = ({ data, dataDefinitionArgs, ...rest }, services) => {
                 return render(rest as any, { ...data, dataDefinitionArgs }, services)
             }
@@ -78,11 +89,11 @@ export function init<LoadDataServices>(
             return registrationWithData
         },
         middleware: (componentProps, middlewareProps, services, next) => {
-            const componentRegistrar = (services.layout as any).compositionRegistrar
-                .componentRegistrar
-            const componentDataDefinition = componentRegistrar.get(componentProps.componentType)
+            const dataDefinition = getComponentDataArgs(
+                services.layout,
+                componentProps.componentType,
+            )
 
-            const dataDefinition = (componentDataDefinition as any).dataDefinition
             if (dataDefinition) {
                 return (
                     <ComponentDataLoader
@@ -121,4 +132,4 @@ export function init<LoadDataServices>(
     }
 }
 
-export { DataDefinition, MaybeLoaded }
+export { DataDefinition, MaybeLoaded, getComponentDataArgs }

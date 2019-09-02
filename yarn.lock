@@ -2704,10 +2704,10 @@ json-parse-better-errors@^1.0.1:
   resolved "https://registry.yarnpkg.com/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz#bb867cfb3450e69107c131d1c514bab3dc8bcaa9"
   integrity sha512-mrqyZKfX5EhL7hvqcV6WG1yYjnjeuYDzDhhcAAUrq8Po85NBQBJP+ZDUT75qZQ98IkUoBqdkExkukOU7Ts2wrw==
 
-json-react-layouts@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/json-react-layouts/-/json-react-layouts-1.0.5.tgz#28bf4f25fb9ca3b191811ebe38204617473408f0"
-  integrity sha512-gJst7oe2X/Nf+/Ke6agnMZNHQaJQ9nVaGOfsycQIEqyFu8n9sbT/B2q/lAdgM/gj7l1+06G3lMJGiJHBwIt/iQ==
+json-react-layouts@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/json-react-layouts/-/json-react-layouts-1.1.1.tgz#c67171bb152927259206a070886b9a83da452357"
+  integrity sha512-Z0kdHPpboLGKDkU4DREf5eNVlJd6/GMFFoBqCN4CojeO+Iy9uyuEyA2mWKiD+wz7d6SWyASDr81TTRQAhmvXxg==
   dependencies:
     typescript-log "^1.1.1"
 
