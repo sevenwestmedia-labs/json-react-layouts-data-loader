@@ -14,5 +14,5 @@ export interface LoadArguments<Services> {
     componentRenderPath: string
     dataDefinition: DataDefinition<any, any, Services>
     dataDefinitionArgs: any
-    layout: LayoutApi<any, any, Services, any>
+    layout: LayoutApi<any, any, Services, any, any>
 }

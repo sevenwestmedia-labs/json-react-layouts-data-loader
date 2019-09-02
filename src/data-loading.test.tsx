@@ -27,9 +27,9 @@ const resources = new DataLoaderResources<{}>()
 const { createRegisterableComposition } = getRegistrationCreators<{}>()
 const { middleware, createRegisterableComponentWithData } = init<{}>(resources)
 
-export const testCompositionRegistration = createRegisterableComposition<'main', {}>()(
+export const testCompositionRegistration = createRegisterableComposition<'main'>()(
     'test-composition',
-    ({ contentAreas }) => <TestComposition main={contentAreas.main} />,
+    contentAreas => <TestComposition main={contentAreas.main} />,
 )
 
 export const testComponentWithDataRegistration = createRegisterableComponentWithData(
@@ -59,12 +59,21 @@ it('can load data for component', async () => {
 
     const wrapper = mount(
         <DataProvider resources={resources} globalProps={{}}>
-            <layout.ContentAreaRenderer
-                componentRenderPath="test"
-                contentArea={[
-                    { type: 'test-with-data', props: { dataDefinitionArgs: { dataArg: 'Foo' } } },
+            <layout.CompositionsRenderer
+                compositions={[
+                    {
+                        type: 'test-composition',
+                        contentAreas: {
+                            main: [
+                                {
+                                    type: 'test-with-data',
+                                    props: { dataDefinitionArgs: { dataArg: 'Foo' } },
+                                },
+                            ],
+                        },
+                        props: {},
+                    },
                 ]}
-                layoutApi={layout}
                 services={{}}
             />
         </DataProvider>,
