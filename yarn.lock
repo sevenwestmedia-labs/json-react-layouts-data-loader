@@ -3582,10 +3582,10 @@ react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6, react-is@^16.9.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.9.0.tgz#21ca9561399aad0ff1a7701c01683e8ca981edcb"
   integrity sha512-tJBzzzIgnnRfEm046qRcURvwQnZVXmuCbscxUO5RWrGTXpon2d4c8mI0D8WE6ydVIm29JiLB6+RslkIvym9Rjw==
 
-react-ssr-data-loader@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/react-ssr-data-loader/-/react-ssr-data-loader-1.1.1.tgz#c81786329c8faaa9e51556230ad40d0897b71c4c"
-  integrity sha512-+pzr0kwu0Q2RoXc3YAMDtIyVbG0+y1P6GzkylysNL8xtzU2Bk9WvQFMNSlIjPcNqV6P9v3Yvn4ZvCesY3CybIg==
+react-ssr-data-loader@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-ssr-data-loader/-/react-ssr-data-loader-1.2.0.tgz#acdf3a79e76be7d55e1538c663d352803b967928"
+  integrity sha512-kNy+bzVQfjiPH0UvxKwENp/MF9cA/84nFl0kHA6PdIfrF2vF4HAFP4AuSAc5TmWqleuktKgcLTDn6m7j1qpAtA==
   dependencies:
     cuid "^2.1.6"
     hash-sum "^2.0.0"

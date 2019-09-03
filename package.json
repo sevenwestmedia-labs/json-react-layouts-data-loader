@@ -40,7 +40,7 @@
         "jest": "^24.9.0",
         "react": "^16.9.0",
         "react-dom": "^16.9.0",
-        "react-ssr-data-loader": "^1.1.1",
+        "react-ssr-data-loader": "^1.2.0",
         "ts-jest": "^24.0.2",
         "tslib": "^1.10.0",
         "typescript": "3.5.3",
@@ -51,6 +51,6 @@
     },
     "peerDependencies": {
         "json-react-layouts": "^2.0.1",
-        "react-ssr-data-loader": "^1.1.1"
+        "react-ssr-data-loader": "^1.2.0"
     }
 }
