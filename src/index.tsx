@@ -6,7 +6,7 @@ import {
 } from 'json-react-layouts'
 import { DataLoaderResources } from 'react-ssr-data-loader'
 
-import { ComponentState, LoadArguments, DataDefinition, MaybeLoaded } from './DataLoading'
+import { ComponentState, LoadArguments, DataDefinition, MaybeLoaded, LoadData } from './DataLoading'
 import { getComponentDataArgs } from './get-data-args'
 
 type RenderComponentWithDataProps<
@@ -23,8 +23,10 @@ type RenderComponentWithDataProps<
 ) => React.ReactElement<any> | false | null
 
 // TODO this could have a better name
-export function init<Services>(
+export function init<Services extends object>(
     resources: DataLoaderResources<Services>,
+    /** Hook into data load functions */
+    wrapLoad?: (loadData: LoadData<any, any, Services>) => LoadData<any, any, Services>,
 ): {
     createRegisterableComponentWithData: <
         ComponentType extends string,
@@ -45,8 +47,20 @@ export function init<Services>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const ComponentDataLoader = resources.registerResource<any, LoadArguments<Services>>(
         'component-data-loader',
-        params => {
-            return params.dataDefinition.loadData(params.dataDefinitionArgs, params)
+        ({
+            dataDefinitionArgs,
+            componentRenderPath,
+            dataDefinition,
+            layout,
+            resourceType,
+            ...services
+        }) => {
+            const loadFn = wrapLoad ? wrapLoad(dataDefinition.loadData) : dataDefinition.loadData
+
+            return loadFn(dataDefinitionArgs, services as any, {
+                componentRenderPath,
+                resourceType,
+            })
         },
         ['componentRenderPath', 'dataDefinitionArgs'],
     )
@@ -89,7 +103,7 @@ export function init<Services>(
             return registrationWithData
         },
         middleware: (componentProps, middlewareProps, services, next) => {
-            const dataDefinition = getComponentDataArgs(
+            const dataDefinition = getComponentDataArgs<Services>(
                 services.layout,
                 componentProps.componentType,
             )

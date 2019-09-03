@@ -9,44 +9,24 @@ import { mount, configure } from 'enzyme'
 
 configure({ adapter: new Adapter() })
 
-const lengthCalculatorDataDefinition: DataDefinition<{ dataArg: string }, number, {}> = {
-    loadData: props =>
-        new Promise(resolve =>
-            setTimeout(() => {
-                resolve(props.dataArg.length)
-            }),
-        ),
-}
-
-// Test component with data
-export const TestComponentWithData: React.FC<{ length: number | undefined }> = ({ length }) => (
-    <div>{length ? `Length: ${length}` : 'Loading'}</div>
-)
-
-const resources = new DataLoaderResources<{}>()
-const { createRegisterableComposition } = getRegistrationCreators<{}>()
-const { middleware, createRegisterableComponentWithData } = init<{}>(resources)
-
-export const testCompositionRegistration = createRegisterableComposition<'main'>()(
-    'test-composition',
-    contentAreas => <TestComposition main={contentAreas.main} />,
-)
-
-export const testComponentWithDataRegistration = createRegisterableComponentWithData(
-    'test-with-data',
-    lengthCalculatorDataDefinition,
-    (props, data) => {
-        return (
-            <TestComponentWithData
-                length={data.loaded ? data.result : undefined}
-                {...props}
-                {...{ dataProps: { data } }}
-            />
-        )
-    },
-)
-
 it('can load data for component', async () => {
+    const resources = new DataLoaderResources<{}>()
+    const { middleware, createRegisterableComponentWithData } = init<{}>(resources)
+
+    const testComponentWithDataRegistration = createRegisterableComponentWithData(
+        'test-with-data',
+        lengthCalculatorDataDefinition,
+        (props, data) => {
+            return (
+                <TestComponentWithData
+                    length={data.loaded ? data.result : undefined}
+                    {...props}
+                    {...{ dataProps: { data } }}
+                />
+            )
+        },
+    )
+
     const layout = new LayoutRegistration()
         .registerComponents(registrar =>
             registrar
@@ -87,6 +67,96 @@ it('can load data for component', async () => {
     expect(component.props()).toMatchSnapshot()
 })
 
-export const TestComposition: React.FC<{ main: React.ReactElement<any> }> = props => (
+it('cap wrap data load function', async () => {
+    let wrapArgs: any
+    let wrapServices: any
+    let wrapContext: any
+    const resources = new DataLoaderResources<{ serviceProp: 'example' }>()
+    const { middleware, createRegisterableComponentWithData } = init<{ serviceProp: 'example' }>(
+        resources,
+        load => (args, services, context) => {
+            wrapArgs = args
+            wrapServices = services
+            wrapContext = context
+            return load(args, services, context)
+        },
+    )
+
+    const testComponentWithDataRegistration = createRegisterableComponentWithData(
+        'test-with-data',
+        lengthCalculatorDataDefinition,
+        (props, data) => {
+            return (
+                <TestComponentWithData
+                    length={data.loaded ? data.result : undefined}
+                    {...props}
+                    {...{ dataProps: { data } }}
+                />
+            )
+        },
+    )
+
+    const layout = new LayoutRegistration<{ serviceProp: 'example' }>()
+        .registerComponents(registrar =>
+            registrar
+                .registerComponent(testComponentWithDataRegistration)
+                .registerMiddleware(middleware),
+        )
+        .registerCompositions(registrar =>
+            registrar.registerComposition(testCompositionRegistration),
+        )
+
+    mount(
+        <DataProvider resources={resources} globalProps={{ serviceProp: 'example' }}>
+            <layout.CompositionsRenderer
+                compositions={[
+                    {
+                        type: 'test-composition',
+                        contentAreas: {
+                            main: [
+                                {
+                                    type: 'test-with-data',
+                                    props: { dataDefinitionArgs: { dataArg: 'Foo' } },
+                                },
+                            ],
+                        },
+                        props: {},
+                    },
+                ]}
+                services={{ serviceProp: 'example' }}
+            />
+        </DataProvider>,
+    )
+
+    expect(wrapArgs).toEqual({ dataArg: 'Foo' })
+    expect(wrapServices).toEqual({ serviceProp: 'example' })
+    expect(wrapContext).toEqual({
+        componentRenderPath: '[0-test-composition]/main[0]',
+        resourceType: 'component-data-loader',
+    })
+})
+
+const { createRegisterableComposition } = getRegistrationCreators<{}>()
+
+// Test component with data
+const TestComponentWithData: React.FC<{ length: number | undefined }> = ({ length }) => (
+    <div>{length ? `Length: ${length}` : 'Loading'}</div>
+)
+
+const TestComposition: React.FC<{ main: React.ReactElement<any> }> = props => (
     <div>{props.main}</div>
 )
+
+const testCompositionRegistration = createRegisterableComposition<'main'>()(
+    'test-composition',
+    contentAreas => <TestComposition main={contentAreas.main} />,
+)
+
+const lengthCalculatorDataDefinition: DataDefinition<{ dataArg: string }, number, any> = {
+    loadData: props =>
+        new Promise(resolve =>
+            setTimeout(() => {
+                resolve(props.dataArg.length)
+            }),
+        ),
+}
