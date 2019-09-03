@@ -53,6 +53,7 @@ export function init<Services extends object>(
             dataDefinition,
             layout,
             resourceType,
+            paramsCacheKey,
             ...services
         }) => {
             const loadFn = wrapLoad ? wrapLoad(dataDefinition.loadData) : dataDefinition.loadData
@@ -60,6 +61,7 @@ export function init<Services extends object>(
             return loadFn(dataDefinitionArgs, services as any, {
                 componentRenderPath,
                 resourceType,
+                paramsCacheKey,
             })
         },
         ['componentRenderPath', 'dataDefinitionArgs'],
