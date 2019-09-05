@@ -1,14 +1,23 @@
 import { LayoutApi } from 'json-react-layouts'
 
 export type LoadData<DataLoadArguments extends object, TData, Services extends object> = (
-    config: DataLoadArguments,
+    dataDefinitionArgs: DataLoadArguments,
     services: Services,
     context: { componentRenderPath: string; resourceType: string; paramsCacheKey: string },
 ) => Promise<TData>
 
-export interface DataDefinition<DataLoadArguments extends object, TData, Services extends object> {
-    getCacheKey?: (config: DataLoadArguments, services: Services) => string
-    loadData: LoadData<DataLoadArguments, TData, Services>
+export interface DataDefinition<
+    DataLoadArguments extends object,
+    TData,
+    Services extends object,
+    AdditionalParams extends object = {}
+> {
+    /** Hook to provide additional dynamic parameters to the data loader */
+    getAdditionalParams?: (
+        dataDefinitionArgs: DataLoadArguments,
+        services: Services,
+    ) => AdditionalParams
+    loadData: LoadData<DataLoadArguments & AdditionalParams, TData, Services>
 }
 
 export type MaybeLoaded<TData> = { loaded: false } | { loaded: true; result: TData }
