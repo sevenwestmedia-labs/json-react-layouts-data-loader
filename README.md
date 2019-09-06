@@ -37,3 +37,35 @@ export const testComponentWithDataRegistration = createRegisterableComponentWith
     },
 )
 ```
+
+## FAQ
+
+### My data load function references global variables and does not update when they change
+
+If you reference global variables in your data load function the data will not be re-fetched when that variable changes. This is because the data loader assumes if the arguments are the same, the result of the load function will be the same as the current data and do nothing.
+
+You can use the `getRuntimeParams` function to merge additional varibles to the data loader props when it re-renders so it can fetch the updated data as expected. For example if you had state stored in redux.
+
+```ts
+import { init } from 'json-react-layouts-data-loader'
+import { DataLoaderResources, DataProvider } from 'react-ssr-data-loader'
+
+export const testComponentWithDataRegistration = createRegisterableComponentWithData(
+    'test-with-data',
+    {
+        getRuntimeParams: (props, services) => services.store.getState().myAdditionalState
+        // You provide this function to load the data
+        loadData: props => {
+            // Now the global state is visible to the data loader and will make up the cache key so changes to myAdditionalState will cause the data to be re-loaded
+            props.myAdditionalState
+        },
+    },
+    (props, data) => {
+        if (!data.loaded) {
+            return <div>Loading...</div>
+        }
+
+        return <TestComponentWithData data={data.result} />
+    },
+)
+```

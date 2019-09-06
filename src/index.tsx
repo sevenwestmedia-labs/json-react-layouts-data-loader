@@ -30,12 +30,13 @@ export function init<Services extends object>(
 ): {
     createRegisterableComponentWithData: <
         ComponentType extends string,
-        ComponentProps extends {},
-        DataLoadArgs extends {},
-        ComponentData
+        ComponentProps extends object,
+        DataLoadArgs extends object,
+        ComponentData,
+        AdditionalParams extends object
     >(
         type: ComponentType,
-        dataDefinition: DataDefinition<DataLoadArgs, ComponentData, Services>,
+        dataDefinition: DataDefinition<DataLoadArgs, ComponentData, Services, AdditionalParams>,
         render: RenderComponentWithDataProps<ComponentProps, ComponentData, DataLoadArgs, Services>,
     ) => ComponentRegistration<
         ComponentType,
@@ -72,10 +73,11 @@ export function init<Services extends object>(
             ComponentType extends string,
             ComponentProps extends {},
             DataLoadArgs extends {},
-            ComponentData
+            ComponentData,
+            AdditionalParams extends object
         >(
             type: ComponentType,
-            dataDefinition: DataDefinition<DataLoadArgs, ComponentData, Services>,
+            dataDefinition: DataDefinition<DataLoadArgs, ComponentData, Services, AdditionalParams>,
             render: RenderComponentWithDataProps<
                 ComponentProps,
                 ComponentData,
@@ -90,10 +92,19 @@ export function init<Services extends object>(
             // Then use the loadData function
             const normalRender: RenderFunction<
                 ComponentProps &
-                    ComponentState<ComponentData> & { dataDefinitionArgs: DataLoadArgs },
+                    ComponentState<ComponentData> & {
+                        dataDefinitionArgs: DataLoadArgs & AdditionalParams
+                    },
                 Services
             > = ({ data, dataDefinitionArgs, ...rest }, services) => {
-                return render(rest as any, { ...data, dataDefinitionArgs }, services)
+                return render(
+                    rest as any,
+                    {
+                        ...data,
+                        dataDefinitionArgs,
+                    },
+                    services,
+                )
             }
 
             const registrationWithData: any = { type, render: normalRender, dataDefinition }
@@ -111,12 +122,26 @@ export function init<Services extends object>(
             )
 
             if (dataDefinition) {
+                const dataDefinitionArgs = dataDefinition.getRuntimeParams
+                    ? {
+                          ...componentProps.dataDefinitionArgs,
+                          ...dataDefinition.getRuntimeParams(
+                              componentProps.dataDefinitionArgs,
+                              services.services,
+                          ),
+                      }
+                    : componentProps.dataDefinitionArgs
+
+                if (dataDefinition.getRuntimeParams) {
+                    componentProps = { ...componentProps, dataDefinitionArgs }
+                }
+
                 return (
                     <ComponentDataLoader
                         layout={services.layout}
                         componentRenderPath={componentProps.componentRenderPath}
                         dataDefinition={dataDefinition}
-                        dataDefinitionArgs={componentProps.dataDefinitionArgs}
+                        dataDefinitionArgs={dataDefinitionArgs}
                         renderData={renderProps => {
                             if (!renderProps.lastAction.success) {
                                 // We have failed to load data, use error boundaries

@@ -137,6 +137,90 @@ it('cap wrap data load function', async () => {
     })
 })
 
+it('component can provide additional arguments dynamically', async () => {
+    const resources = new DataLoaderResources<{}>()
+    const { middleware, createRegisterableComponentWithData } = init<{}>(resources)
+
+    const lengthCalculatorWithMultiplierDataDefinition: DataDefinition<
+        { dataArg: string },
+        number,
+        {},
+        { multiplier: number }
+    > = {
+        // Additional params can come from anywhere, for instance redux or
+        // other environmental variables (window.location?)
+        getRuntimeParams: () => {
+            return {
+                multiplier: 2,
+            }
+        },
+        loadData: props =>
+            new Promise(resolve =>
+                setTimeout(() => {
+                    resolve(props.dataArg.length * props.multiplier)
+                }),
+            ),
+    }
+
+    const testComponentWithDataRegistration = createRegisterableComponentWithData(
+        'test-with-data',
+        lengthCalculatorWithMultiplierDataDefinition,
+        (props, data) => {
+            return (
+                <TestComponentWithData
+                    length={data.loaded ? data.result : undefined}
+                    {...props}
+                    {...{ dataProps: { data } }}
+                />
+            )
+        },
+    )
+
+    const layout = new LayoutRegistration()
+        .registerComponents(registrar =>
+            registrar
+                .registerComponent(testComponentWithDataRegistration)
+                .registerMiddleware(middleware),
+        )
+        .registerCompositions(registrar =>
+            registrar.registerComposition(testCompositionRegistration),
+        )
+
+    const wrapper = mount(
+        <DataProvider resources={resources} globalProps={{}}>
+            <layout.CompositionsRenderer
+                compositions={[
+                    {
+                        type: 'test-composition',
+                        contentAreas: {
+                            main: [
+                                {
+                                    type: 'test-with-data',
+                                    props: { dataDefinitionArgs: { dataArg: 'Foo' } },
+                                },
+                            ],
+                        },
+                        props: {},
+                    },
+                ]}
+                services={{}}
+            />
+        </DataProvider>,
+    )
+
+    await new Promise(resolve => setTimeout(resolve))
+
+    const component = wrapper.update().find(TestComponentWithData)
+    expect(component.text()).toBe('Length: 6')
+    expect(component.props()).toMatchObject({
+        dataProps: {
+            data: {
+                dataDefinitionArgs: { dataArg: 'Foo', multiplier: 2 },
+            },
+        },
+    })
+})
+
 const { createRegisterableComposition } = getRegistrationCreators<{}>()
 
 // Test component with data
@@ -153,7 +237,7 @@ const testCompositionRegistration = createRegisterableComposition<'main'>()(
     contentAreas => <TestComposition main={contentAreas.main} />,
 )
 
-const lengthCalculatorDataDefinition: DataDefinition<{ dataArg: string }, number, any> = {
+const lengthCalculatorDataDefinition: DataDefinition<{ dataArg: string }, number, {}> = {
     loadData: props =>
         new Promise(resolve =>
             setTimeout(() => {
