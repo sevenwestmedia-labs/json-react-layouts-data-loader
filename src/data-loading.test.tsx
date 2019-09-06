@@ -149,7 +149,7 @@ it('component can provide additional arguments dynamically', async () => {
     > = {
         // Additional params can come from anywhere, for instance redux or
         // other environmental variables (window.location?)
-        getAdditionalParams: () => {
+        getRuntimeParams: () => {
             return {
                 multiplier: 2,
             }

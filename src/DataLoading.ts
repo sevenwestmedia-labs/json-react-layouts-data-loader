@@ -13,7 +13,7 @@ export interface DataDefinition<
     AdditionalParams extends object = {}
 > {
     /** Hook to provide additional dynamic parameters to the data loader */
-    getAdditionalParams?: (
+    getRuntimeParams?: (
         dataDefinitionArgs: DataLoadArguments,
         services: Services,
     ) => AdditionalParams
