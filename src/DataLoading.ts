@@ -12,8 +12,8 @@ export interface DataDefinition<
     Services extends object,
     AdditionalParams extends object = {}
 > {
-    /** Hook to provide additional dynamic parameters to the data loader */
-    getRuntimeParams?: (
+    /** Custom React Hook to provide additional dynamic parameters to the data loader */
+    useRuntimeParams?: (
         dataDefinitionArgs: DataLoadArguments,
         services: Services,
     ) => AdditionalParams

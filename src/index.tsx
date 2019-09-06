@@ -122,17 +122,17 @@ export function init<Services extends object>(
             )
 
             if (dataDefinition) {
-                const dataDefinitionArgs = dataDefinition.getRuntimeParams
+                const dataDefinitionArgs = dataDefinition.useRuntimeParams
                     ? {
                           ...componentProps.dataDefinitionArgs,
-                          ...dataDefinition.getRuntimeParams(
+                          ...dataDefinition.useRuntimeParams(
                               componentProps.dataDefinitionArgs,
                               services.services,
                           ),
                       }
                     : componentProps.dataDefinitionArgs
 
-                if (dataDefinition.getRuntimeParams) {
+                if (dataDefinition.useRuntimeParams) {
                     componentProps = { ...componentProps, dataDefinitionArgs }
                 }
 
