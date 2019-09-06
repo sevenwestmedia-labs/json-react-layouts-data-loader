@@ -1,4 +1,5 @@
 import React from 'react'
+import { act } from 'react-dom/test-utils'
 import Adapter from 'enzyme-adapter-react-16'
 import { init } from '.'
 import { DataDefinition } from './DataLoading'
@@ -140,6 +141,7 @@ it('cap wrap data load function', async () => {
 it('component can provide additional arguments dynamically', async () => {
     const resources = new DataLoaderResources<{}>()
     const { middleware, createRegisterableComponentWithData } = init<{}>(resources)
+    let updateMultiplier: (multiplier: number) => void = () => {}
 
     const lengthCalculatorWithMultiplierDataDefinition: DataDefinition<
         { dataArg: string },
@@ -149,9 +151,14 @@ it('component can provide additional arguments dynamically', async () => {
     > = {
         // Additional params can come from anywhere, for instance redux or
         // other environmental variables (window.location?)
-        getRuntimeParams: () => {
+        useRuntimeParams: () => {
+            const [multiplier, setMultiplier] = React.useState(2)
+            React.useEffect(() => {
+                updateMultiplier = setMultiplier
+            }, [])
+
             return {
-                multiplier: 2,
+                multiplier,
             }
         },
         loadData: props =>
@@ -210,12 +217,27 @@ it('component can provide additional arguments dynamically', async () => {
 
     await new Promise(resolve => setTimeout(resolve))
 
-    const component = wrapper.update().find(TestComponentWithData)
+    let component = wrapper.update().find(TestComponentWithData)
     expect(component.text()).toBe('Length: 6')
     expect(component.props()).toMatchObject({
         dataProps: {
             data: {
                 dataDefinitionArgs: { dataArg: 'Foo', multiplier: 2 },
+            },
+        },
+    })
+
+    act(() => {
+        updateMultiplier(3)
+    })
+    await new Promise(resolve => setTimeout(resolve))
+
+    component = wrapper.update().find(TestComponentWithData)
+    expect(component.text()).toBe('Length: 9')
+    expect(component.props()).toMatchObject({
+        dataProps: {
+            data: {
+                dataDefinitionArgs: { dataArg: 'Foo', multiplier: 3 },
             },
         },
     })
