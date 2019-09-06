@@ -42,9 +42,9 @@ export const testComponentWithDataRegistration = createRegisterableComponentWith
 
 ### My data load function references global variables and does not update when they change
 
-The data load props make up a cache key in the data loader, meaning all used references need to be visible to the data loader.
+If you reference global variables in your data load function the data will not be re-fetched when that variable changes. This is because the data loader assumes if the arguments are the same, the result of the load function will be the same as the current data and do nothing.
 
-You can use the `getRuntimeParams` function to provide additional runtime params as an escape hatch. For example if you had state stored in redux.
+You can use the `getRuntimeParams` function to merge additional varibles to the data loader props when it re-renders so it can fetch the updated data as expected. For example if you had state stored in redux.
 
 ```ts
 import { init } from 'json-react-layouts-data-loader'
