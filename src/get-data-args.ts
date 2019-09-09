@@ -8,6 +8,10 @@ export function getComponentDataArgs<Services extends object>(
     const { componentRegistrar } = getRegistrars(layout)
     const componentDataDefinition = componentRegistrar.get(componentType)
 
+    // This can be undefined
+    if (!componentDataDefinition) {
+        return
+    }
     const dataDefinition = (componentDataDefinition as any).dataDefinition
 
     return dataDefinition
