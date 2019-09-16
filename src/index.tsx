@@ -50,7 +50,6 @@ export function init<Services extends object>(
         'component-data-loader',
         ({
             dataDefinitionArgs,
-            componentRenderPath,
             dataDefinition,
             layout,
             resourceType,
@@ -60,12 +59,11 @@ export function init<Services extends object>(
             const loadFn = wrapLoad ? wrapLoad(dataDefinition.loadData) : dataDefinition.loadData
 
             return loadFn(dataDefinitionArgs, services as any, {
-                componentRenderPath,
                 resourceType,
                 paramsCacheKey,
             })
         },
-        ['componentRenderPath', 'dataDefinitionArgs'],
+        ['dataDefinitionArgs'],
     )
 
     return {
@@ -139,7 +137,6 @@ export function init<Services extends object>(
                 return (
                     <ComponentDataLoader
                         layout={services.layout}
-                        componentRenderPath={componentProps.componentRenderPath}
                         dataDefinition={dataDefinition}
                         dataDefinitionArgs={dataDefinitionArgs}
                         renderData={renderProps => {
