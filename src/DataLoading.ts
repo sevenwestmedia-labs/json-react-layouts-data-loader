@@ -3,7 +3,7 @@ import { LayoutApi } from 'json-react-layouts'
 export type LoadData<DataLoadArguments extends object, TData, Services extends object> = (
     dataDefinitionArgs: DataLoadArguments,
     services: Services,
-    context: { componentRenderPath: string; resourceType: string; paramsCacheKey: string },
+    context: { resourceType: string; paramsCacheKey: string },
 ) => Promise<TData>
 
 export interface DataDefinition<
@@ -26,7 +26,6 @@ export interface ComponentState<TData> {
 }
 
 export interface LoadArguments<Services extends object> {
-    componentRenderPath: string
     dataDefinition: DataDefinition<any, any, Services>
     dataDefinitionArgs: any
     layout: LayoutApi<any, any, Services, any, any>

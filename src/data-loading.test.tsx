@@ -132,8 +132,7 @@ it('cap wrap data load function', async () => {
     expect(wrapArgs).toEqual({ dataArg: 'Foo' })
     expect(wrapServices).toEqual({ serviceProp: 'example' })
     expect(wrapContext).toEqual({
-        componentRenderPath: '[0-test-composition]/main[0]',
-        paramsCacheKey: 'dba86410',
+        paramsCacheKey: '7c4bd5d4',
         resourceType: 'component-data-loader',
     })
 })
